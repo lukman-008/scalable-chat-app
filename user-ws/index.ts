@@ -1,9 +1,9 @@
 import { WebSocketServer , WebSocket } from 'ws';
 
-const wss = new WebSocketServer({ port: 8080 });
+const wss = new WebSocketServer({ port: 9090 });
 
 interface Room{
-    sockets : WebSocket[];
+    sockets : WebSocket[]
 }
 
 const rooms: Record<string, Room> = {};
@@ -13,7 +13,7 @@ wss.on('connection', function connection(ws) {
 
   ws.on('message', function message(data: string) {
     const parsedData = JSON.parse(data);
-    if (parsedData.type == 'join'){
+    if (parsedData.type == 'join-room'){
         const room = parsedData.room;    
         if (!rooms[room]){
             rooms[room] = {
@@ -24,8 +24,7 @@ wss.on('connection', function connection(ws) {
     }
     if (parsedData.type == 'chat'){
         const room = parsedData.room;
-        rooms[room].sockets.map(socket => socket.send(data));
+        rooms[room]?.sockets.map(socket => socket.send(data));
     }
   });
-  ws.send('something');
 });

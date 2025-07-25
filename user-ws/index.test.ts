@@ -1,7 +1,7 @@
 import { resolve } from 'bun';
-import { describe, beforeAll, test } from 'bun:test'
+import { describe, beforeAll, test, expect } from 'bun:test'
 import { WebSocket, WebSocketServer } from 'ws';
-const BACKEND_URL = "ws://localhost:8080";
+const BACKEND_URL = "ws://localhost:9090";
 
 describe("Chat Application", () => {
     test("Message sent from room one reaches another participant in room 1 ", async () => {
@@ -22,17 +22,34 @@ describe("Chat Application", () => {
                     resolve()
                 }
             }
+            console.log("connected")
         })
 
+        console.log("control flow - 1")
 
         ws1.send(JSON.stringify({
             type: 'join-room',
             room: 'Room 1'
         }))
-        ws1.send(JSON.stringify({
-            type: 'join-room',
-            room: 'Room 1'
+        ws2.send(JSON.stringify({
+            type: "join-room",
+            room: "Room 1"
         }))
+        console.log("control flow")
+        await new Promise<void>((resolve) => {
+            ws2.onmessage = ({data}) => {
+                console.log("Data : ",data);
+                const parsedData = JSON.parse(data.toString());;
+                expect(parsedData.type).toBe('chat');
+                expect(parsedData.message).toBe("Hi there");
+                resolve();
+            }
+        ws1.send(JSON.stringify({
+                type: 'chat',
+                room: 'Room 1',
+                message: "Hi there"
+            }))
+        })
 
     })
 })

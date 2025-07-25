@@ -1,12 +1,12 @@
 import { resolve } from 'bun';
 import { describe, beforeAll, test, expect } from 'bun:test'
 import { WebSocket, WebSocketServer } from 'ws';
-const BACKEND_URL = "ws://localhost:9090";
-
+const BACKEND_URL_1 = "ws://localhost:9091";
+const BACKEND_URL_2 = "ws://localhost:9092";
 describe("Chat Application", () => {
     test("Message sent from room one reaches another participant in room 1 ", async () => {
-        const ws1 = new WebSocket(BACKEND_URL);
-        const ws2 = new WebSocket(BACKEND_URL);
+        const ws1 = new WebSocket(BACKEND_URL_1);
+        const ws2 = new WebSocket(BACKEND_URL_2);
 
         await new Promise<void>((resolve, reject) => {
             let count = 0;
